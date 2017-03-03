@@ -1,0 +1,7 @@
+#!/bin/bash
+
+echo "Updating Home Assistant configuration" >> /dev/kmsg
+/srv/homeassistant/bin/python /usr/local/bin/setup_homeassistant.py
+
+echo "Enabling Home Assistant" >> /dev/kmsg
+systemctl enable home-assistant@homeassistant.service
