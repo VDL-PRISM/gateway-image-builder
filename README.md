@@ -9,13 +9,23 @@ Use this script to create an image for a PRISMS gateway. The image can be furthe
 Only three keys are supported inside of `device-init.yaml`:
 - hostname: changes the hostname of the device.
 - password: changes the password of the device.
-- home_assistant_configuration: a Home Assistant configuration. Anything under this will be copied to `.homeassistant/configuration.yaml`.
+- ngrok: a ngrok configuration. Anything under this will be copied to '~/.ngrok2/ngrok.yaml'.
+- home_assistant_configuration: a Home Assistant configuration. Anything under this will be copied to `~/.homeassistant/configuration.yaml`.
 
 An example of a device-init.yaml:
 
 ```
 hostname: gateway
 password: secret_password
+
+ngrok:
+  authtoken: xxxxxxxxxxx
+  tunnels:
+    ssh:
+      proto: tcp
+      addr: 22
+      remote_addr: "1.tcp.ngrok.io:xxxx"
+
 home_assistant_configuration:
   homeassistant:
     name: Home

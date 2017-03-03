@@ -1,0 +1,8 @@
+#!/bin/bash
+
+echo "Setting up ngrok" >> /dev/kmsg
+/srv/homeassistant/bin/python /usr/local/bin/setup_ngrok.py
+
+echo "Enabling ngrok" >> /dev/kmsg
+/usr/local/bin/ngrok service install -config /home/pi/.ngrok2/ngrok.yaml
+/usr/local/bin/ngrok service start
