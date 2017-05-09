@@ -9,8 +9,8 @@ BUILD_PATH="/build"
 NEW_IMAGE_NAME="prisms-gateway-${PRISMS_GATEWAY_IMAGE_VERSION}.img"
 
 # Get necessary software
-apt update
-apt install -y binfmt-support qemu qemu-user-static libguestfs-tools zip unzip
+sudo apt update
+sudo apt install -y binfmt-support qemu qemu-user-static libguestfs-tools zip unzip
 
 # Download image
 wget "https://downloads.raspberrypi.org/raspbian_lite/images/${RASPBIAN_FOLDER}/${RASPBIAN_IMAGE_NAME}.zip"
