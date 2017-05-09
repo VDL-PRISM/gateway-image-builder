@@ -13,23 +13,23 @@ sudo apt update
 sudo apt install -y binfmt-support qemu qemu-user-static libguestfs-tools zip unzip
 
 # Download image
-wget "https://downloads.raspberrypi.org/raspbian_lite/images/${RASPBIAN_FOLDER}/${RASPBIAN_IMAGE_NAME}.zip"
-unzip "${RASPBIAN_IMAGE_NAME}.zip"
+wget "https://www.files.app.lundrigan.org/${RASPBIAN_VERSION}-raspbian-jessie-lite.zip"
+unzip "${RASPBIAN_VERSION}-raspbian-jessie-lite.zip"
 
 # Create build directory for assembling our image filesystem
-rm -rf ${BUILD_PATH}
-mkdir ${BUILD_PATH}
+sudo rm -rf ${BUILD_PATH}
+sudo mkdir ${BUILD_PATH}
 
-update-binfmts --enable qemu-arm
+sudo update-binfmts --enable qemu-arm
 
 # Mount the image
-guestmount -a "${RASPBIAN_IMAGE_NAME}.img" -m /dev/sda2:/ -m /dev/sda1:/boot "${BUILD_PATH}"
+sudo guestmount -a "${RASPBIAN_VERSION}-raspbian-jessie-lite.img" -m /dev/sda2:/ -m /dev/sda1:/boot "${BUILD_PATH}"
 
 # Mount pseudo filesystems
-mount -o bind /dev ${BUILD_PATH}/dev
-mount -o bind /dev/pts ${BUILD_PATH}/dev/pts
-mount -t proc none ${BUILD_PATH}/proc
-mount -t sysfs none ${BUILD_PATH}/sys
+sudo mount -o bind /dev ${BUILD_PATH}/dev
+sudo mount -o bind /dev/pts ${BUILD_PATH}/dev/pts
+sudo mount -t proc none ${BUILD_PATH}/proc
+sudo mount -t sysfs none ${BUILD_PATH}/sys
 
 # Copy necessary executable
 cp /usr/bin/qemu-arm-static "${BUILD_PATH}/usr/bin/"
@@ -124,7 +124,7 @@ umount -l ${BUILD_PATH}/sys
 guestunmount "${BUILD_PATH}" || true
 
 # Rename image
-mv "${RASPBIAN_IMAGE_NAME}.img" "${NEW_IMAGE_NAME}"
+mv "${RASPBIAN_VERSION}-raspbian-jessie-lite.img" "${NEW_IMAGE_NAME}"
 
 # Compress image
 zip "${NEW_IMAGE_NAME}.zip" "${NEW_IMAGE_NAME}"
