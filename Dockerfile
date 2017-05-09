@@ -8,6 +8,7 @@ RUN apt-get update && \
     libguestfs-tools \
     zip \
     unzip \
+    wget \
     --no-install-recommends && \
     rm -rf /var/lib/apt/lists/*
 
