@@ -1,4 +1,6 @@
 sudo: required
+services:
+  - docker
 language: bash
 script:
-  - ./build.sh
+  - make sd-image

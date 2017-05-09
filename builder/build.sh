@@ -1,35 +1,37 @@
 #!/bin/bash -e
 set -x
 
+if [ ! -f /.dockerenv ]; then
+  echo "ERROR: script works only in a Docker container!"
+  exit 1
+fi
+
 # Get versions for software that needs to be installed
-source versions.config
+source workspace/versions.config
 
 # Place to build our sd-image
 BUILD_PATH="/build"
 NEW_IMAGE_NAME="prisms-gateway-${PRISMS_GATEWAY_IMAGE_VERSION}.img"
 
-# Get necessary software
-sudo apt update
-sudo apt install -y binfmt-support qemu qemu-user-static libguestfs-tools zip unzip
 
 # Download image
 wget "https://www.files.app.lundrigan.org/${RASPBIAN_VERSION}-raspbian-jessie-lite.zip"
 unzip "${RASPBIAN_VERSION}-raspbian-jessie-lite.zip"
 
 # Create build directory for assembling our image filesystem
-sudo rm -rf ${BUILD_PATH}
-sudo mkdir ${BUILD_PATH}
+rm -rf ${BUILD_PATH}
+mkdir ${BUILD_PATH}
 
-sudo update-binfmts --enable qemu-arm
+update-binfmts --enable qemu-arm
 
 # Mount the image
-sudo guestmount -a "${RASPBIAN_VERSION}-raspbian-jessie-lite.img" -m /dev/sda2:/ -m /dev/sda1:/boot "${BUILD_PATH}"
+guestmount -a "${RASPBIAN_VERSION}-raspbian-jessie-lite.img" -m /dev/sda2:/ -m /dev/sda1:/boot "${BUILD_PATH}"
 
 # Mount pseudo filesystems
-sudo mount -o bind /dev ${BUILD_PATH}/dev
-sudo mount -o bind /dev/pts ${BUILD_PATH}/dev/pts
-sudo mount -t proc none ${BUILD_PATH}/proc
-sudo mount -t sysfs none ${BUILD_PATH}/sys
+mount -o bind /dev ${BUILD_PATH}/dev
+mount -o bind /dev/pts ${BUILD_PATH}/dev/pts
+mount -t proc none ${BUILD_PATH}/proc
+mount -t sysfs none ${BUILD_PATH}/sys
 
 # Copy necessary executable
 cp /usr/bin/qemu-arm-static "${BUILD_PATH}/usr/bin/"
