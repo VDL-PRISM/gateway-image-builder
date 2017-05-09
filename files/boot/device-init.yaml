@@ -1,2 +1,51 @@
 hostname: gateway
 password: prisms-project
+
+ngrok:
+  authtoken: [CHANGE ME]
+  tunnels:
+    ssh:
+      proto: tcp
+      addr: 22
+      remote_addr: [CHANGE ME]
+    ui:
+      proto: http
+      subdomain: [CHANGE ME]
+      addr: 8123
+
+home_assistant_configuration:
+  homeassistant:
+    name: Home
+    unit_system: imperial
+    time_zone: America/Denver
+
+  frontend:
+
+  http:
+    api_password: clean air!
+
+  logger:
+    default: warning
+    logs:
+      homeassistant.bootstrap: info
+      homeassistant.util.package: info
+      custom_components.prisms_influxdb: info
+      custom_components.sensor.air_quality: debug
+      coapthon: debug
+
+  sensor:
+    - platform: air_quality
+      update_time: 15
+      discover_time: 30
+
+  prisms_influxdb:
+    host: [CHANGE ME]
+    port: [CHANGE ME]
+    username: [CHANGE ME]
+    password: [CHANGE ME]
+    ssl: yes
+    verify_ssl: yes
+    home_id: [CHANGE ME]
+    batch_time: 10
+    blacklist:
+      - persistent_notification.invalid_config
