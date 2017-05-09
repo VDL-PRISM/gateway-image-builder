@@ -51,10 +51,23 @@ apt-get update
 apt-get upgrade -y
 
 # Install basic software
-apt-get install -y zip unzip avahi-daemon git
+apt-get install -y zip unzip avahi-daemon git vim
 
-# Install for Home Assistant
-apt-get install -y python3 python3-venv python3-pip
+# Install Python 3.6 (https://raspberrypi.stackexchange.com/a/56632)
+sudo apt-get install build-essential libc6-dev
+sudo apt-get install libncurses5-dev libncursesw5-dev libreadline6-dev
+sudo apt-get install libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev
+sudo apt-get install libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev
+wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz
+tar -zxvf Python-${PYTHON_VERSION}.tgz
+
+cd Python-${PYTHON_VERSION}
+./configure
+make -j4
+sudo make install
+cd ..
+sudo rm -fr ./Python-${PYTHON_VERSION}*
+
 
 # Create homeassistant user
 groupadd -f -r -g 1001 homeassistant
