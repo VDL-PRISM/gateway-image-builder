@@ -40,7 +40,7 @@ cp /usr/bin/qemu-arm-static "${BUILD_PATH}/usr/bin/"
 sed -i 's/^/# /' ${BUILD_PATH}/etc/ld.so.preload
 
 # Modify/add image files directly
-cp -R ~/sensor-image-builder/files/* ${BUILD_PATH}/
+cp -R /builder/files/* ${BUILD_PATH}/
 
 # Install everything needed on the image
 chroot ${BUILD_PATH} /bin/bash -x - << EOF
