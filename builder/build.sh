@@ -109,6 +109,11 @@ rm ngrok-link-stable-linux-arm.tgz
 find /srv/homeassistant/lib/ | grep -E "(__pycache__|\.pyc$)" | xargs rm -rf
 
 # Cleanup other stuff
+apt-get --purge remove build-essential tk-dev
+apt-get --purge remove libncurses5-dev libncursesw5-dev libreadline6-dev
+apt-get --purge remove libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev
+apt-get --purge remove libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev
+apt-get autoremove
 apt-get clean
 rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 EOF
