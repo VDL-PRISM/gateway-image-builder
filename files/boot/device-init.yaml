@@ -1,5 +1,5 @@
 hostname: gateway
-password: prisms-project
+password: [CHANGE ME]
 
 ngrok:
   authtoken: [CHANGE ME]
@@ -22,7 +22,7 @@ home_assistant_configuration:
   frontend:
 
   http:
-    api_password: clean air!
+    api_password: [CHANGE ME]
 
   logger:
     default: warning
@@ -43,8 +43,8 @@ home_assistant_configuration:
     port: [CHANGE ME]
     username: [CHANGE ME]
     password: [CHANGE ME]
-    ssl: yes
-    verify_ssl: yes
+    ssl: [CHANGE ME]
+    verify_ssl: [CHANGE ME]
     home_id: [CHANGE ME]
     batch_time: 10
     blacklist:
