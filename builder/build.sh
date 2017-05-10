@@ -49,64 +49,61 @@ cp -R /builder/files/* ${BUILD_PATH}/
 chroot ${BUILD_PATH} /bin/bash -x - << EOF
 
 # Set default locales to 'en_US.UTF-8'
-# echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen
-# locale-gen
+echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen
+locale-gen
 
-# apt-get update
-# apt-get upgrade -y
+apt-get update
+apt-get upgrade -y
 
 # Install basic software
-# apt-get install -y zip unzip avahi-daemon git vim
+apt-get install -y zip unzip avahi-daemon git vim
 
 # Install Python 3.6 (https://raspberrypi.stackexchange.com/a/56632)
-# sudo apt-get install build-essential libc6-dev
-# sudo apt-get install libncurses5-dev libncursesw5-dev libreadline6-dev
-# sudo apt-get install libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev
-# sudo apt-get install libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev
-# wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz
-# tar -zxvf Python-${PYTHON_VERSION}.tgz
+apt-get install -y build-essential libc6-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev
+wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz
+tar -zxvf Python-${PYTHON_VERSION}.tgz
 
-# cd Python-${PYTHON_VERSION}
-# ./configure
-# make -j4
-# sudo make install
-# cd ..
-# sudo rm -fr ./Python-${PYTHON_VERSION}*
+cd Python-${PYTHON_VERSION}
+./configure
+make -j4
+sudo make install
+cd ..
+sudo rm -fr ./Python-${PYTHON_VERSION}*
 
 # Create homeassistant user
-# groupadd -f -r -g 1001 homeassistant
-# useradd -u 1001 -g 1001 -rm homeassistant
+groupadd -f -r -g 1001 homeassistant
+useradd -u 1001 -g 1001 -rm homeassistant
 
 # Install home assistant
-# python3 -m venv /srv/homeassistant
-# source /srv/homeassistant/bin/activate
-# pip3 install --upgrade pip
-# pip3 install --no-cache-dir homeassistant==${HOME_ASSISTANT_VERSION}
-# chown -R homeassistant:homeassistant /srv/homeassistant
+python3 -m venv /srv/homeassistant
+source /srv/homeassistant/bin/activate
+pip3 install --upgrade pip
+pip3 install --no-cache-dir homeassistant==${HOME_ASSISTANT_VERSION}
+chown -R homeassistant:homeassistant /srv/homeassistant
 
 # Install mosquitto
-# apt-get install -y mosquitto
+apt-get install -y mosquitto
 
 # Install influxdb
-# wget "https://dl.influxdata.com/influxdb/releases/influxdb_${INFLUXDB_VERSION}_armhf.deb"
-# dpkg -i "influxdb_${INFLUXDB_VERSION}_armhf.deb"
-# rm "influxdb_${INFLUXDB_VERSION}_armhf.deb"
+wget "https://dl.influxdata.com/influxdb/releases/influxdb_${INFLUXDB_VERSION}_armhf.deb"
+dpkg -i "influxdb_${INFLUXDB_VERSION}_armhf.deb"
+rm "influxdb_${INFLUXDB_VERSION}_armhf.deb"
 
 # Install custom components and their dependencies
-# git clone https://github.com/VDL-PRISM/home-assistant-components.git /home/homeassistant/.homeassistant/custom_components
-# pip3 install --no-cache-dir -r /home/homeassistant/.homeassistant/custom_components/requirements.txt
+git clone https://github.com/VDL-PRISM/home-assistant-components.git /home/homeassistant/.homeassistant/custom_components
+pip3 install --no-cache-dir -r /home/homeassistant/.homeassistant/custom_components/requirements.txt
 
 # Make sure permissions are correct
-# chown -R homeassistant:homeassistant /home/homeassistant
+chown -R homeassistant:homeassistant /home/homeassistant
 
 # Install ngrok
-# curl -O https://bin.equinox.io/c/gDfFGFRN2Jh/ngrok-link-stable-linux-arm.tgz
-# tar -xvzf ngrok-link-stable-linux-arm.tgz
-# mv ngrok /usr/local/bin
-# rm ngrok-link-stable-linux-arm.tgz
+curl -O https://bin.equinox.io/c/gDfFGFRN2Jh/ngrok-link-stable-linux-arm.tgz
+tar -xvzf ngrok-link-stable-linux-arm.tgz
+mv ngrok /usr/local/bin
+rm ngrok-link-stable-linux-arm.tgz
 
 # Clean up Python caches
-# find /srv/homeassistant/lib/ | grep -E "(__pycache__|\.pyc$)" | xargs rm -rf
+find /srv/homeassistant/lib/ | grep -E "(__pycache__|\.pyc$)" | xargs rm -rf
 
 # Cleanup other stuff
 apt-get --purge remove -y libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev
