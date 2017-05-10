@@ -16,7 +16,7 @@ NEW_IMAGE_NAME="prisms-gateway-${PRISMS_GATEWAY_IMAGE_VERSION}.img"
 
 # Download image
 if [ ! -f "${BUILD_RESULT_PATH}/${RASPBIAN_VERSION}-raspbian-jessie-lite.zip" ]; then
-    wget -q -O "${BUILD_RESULT_PATH}/${RASPBIAN_VERSION}-raspbian-jessie-lite.zip" "https://www.files.app.lundrigan.org/${RASPBIAN_VERSION}-raspbian-jessie-lite.zip"
+    wget -O "${BUILD_RESULT_PATH}/${RASPBIAN_VERSION}-raspbian-jessie-lite.zip" "https://www.files.app.lundrigan.org/${RASPBIAN_VERSION}-raspbian-jessie-lite.zip"
 fi
 
 unzip -p "${BUILD_RESULT_PATH}/${RASPBIAN_VERSION}-raspbian-jessie-lite.zip" > "/${RASPBIAN_VERSION}-raspbian-jessie-lite.img"
@@ -58,17 +58,13 @@ apt-get upgrade -y
 # Install basic software
 apt-get install -y zip unzip avahi-daemon git vim
 
-# Install Python 3.6 (https://raspberrypi.stackexchange.com/a/56632)
-apt-get install -y build-essential libc6-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev
-wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz
-tar -zxvf Python-${PYTHON_VERSION}.tgz
-
+# Install Python 3.6
+wget https://www.files.app.lundrigan.org/Python-${PYTHON_VERSION}.zip
+unzip Python-${PYTHON_VERSION}.zip
 cd Python-${PYTHON_VERSION}
-./configure
-make -j4
-sudo make install
+make install
 cd ..
-sudo rm -fr ./Python-${PYTHON_VERSION}*
+rm -fr ./Python-${PYTHON_VERSION}*
 
 # Create homeassistant user
 groupadd -f -r -g 1001 homeassistant
