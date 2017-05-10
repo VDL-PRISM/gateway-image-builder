@@ -11,12 +11,15 @@ source workspace/versions.config
 
 # Place to build our sd-image
 BUILD_PATH="/build"
+BUILD_RESULT_PATH="/workspace"
 NEW_IMAGE_NAME="prisms-gateway-${PRISMS_GATEWAY_IMAGE_VERSION}.img"
 
-
 # Download image
-wget "https://www.files.app.lundrigan.org/${RASPBIAN_VERSION}-raspbian-jessie-lite.zip"
-unzip "${RASPBIAN_VERSION}-raspbian-jessie-lite.zip"
+if [ ! -f "${BUILD_RESULT_PATH}/${RASPBIAN_VERSION}-raspbian-jessie-lite.zip" ]; then
+    wget -q -O "${BUILD_RESULT_PATH}/${RASPBIAN_VERSION}-raspbian-jessie-lite.zip" "https://www.files.app.lundrigan.org/${RASPBIAN_VERSION}-raspbian-jessie-lite.zip"
+fi
+
+unzip -p "${BUILD_RESULT_PATH}/${RASPBIAN_VERSION}-raspbian-jessie-lite.zip" > "/${RASPBIAN_VERSION}-raspbian-jessie-lite.img"
 
 # Create build directory for assembling our image filesystem
 rm -rf ${BUILD_PATH}
@@ -25,7 +28,7 @@ mkdir ${BUILD_PATH}
 update-binfmts --enable qemu-arm
 
 # Mount the image
-guestmount -a "${RASPBIAN_VERSION}-raspbian-jessie-lite.img" -m /dev/sda2:/ -m /dev/sda1:/boot "${BUILD_PATH}"
+guestmount -a "/${RASPBIAN_VERSION}-raspbian-jessie-lite.img" -m /dev/sda2:/ -m /dev/sda1:/boot "${BUILD_PATH}"
 
 # Mount pseudo filesystems
 mount -o bind /dev ${BUILD_PATH}/dev
@@ -69,7 +72,6 @@ make -j4
 sudo make install
 cd ..
 sudo rm -fr ./Python-${PYTHON_VERSION}*
-
 
 # Create homeassistant user
 groupadd -f -r -g 1001 homeassistant
@@ -126,7 +128,7 @@ umount -l ${BUILD_PATH}/sys
 guestunmount "${BUILD_PATH}" || true
 
 # Rename image
-mv "${RASPBIAN_VERSION}-raspbian-jessie-lite.img" "${NEW_IMAGE_NAME}"
+mv "/${RASPBIAN_VERSION}-raspbian-jessie-lite.img" "${BUILD_RESULT_PATH}/${NEW_IMAGE_NAME}"
 
 # Compress image
-zip "${NEW_IMAGE_NAME}.zip" "${NEW_IMAGE_NAME}"
+zip "${BUILD_RESULT_PATH}/${NEW_IMAGE_NAME}.zip" "${BUILD_RESULT_PATH}/${NEW_IMAGE_NAME}"
