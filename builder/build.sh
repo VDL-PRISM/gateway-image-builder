@@ -25,8 +25,6 @@ unzip -p "${BUILD_RESULT_PATH}/${RASPBIAN_VERSION}-raspbian-jessie-lite.zip" > "
 rm -rf ${BUILD_PATH}
 mkdir ${BUILD_PATH}
 
-update-binfmts --enable qemu-arm
-
 # Mount the image
 guestmount -a "/${RASPBIAN_VERSION}-raspbian-jessie-lite.img" -m /dev/sda2:/ -m /dev/sda1:/boot "${BUILD_PATH}"
 
@@ -36,11 +34,6 @@ mount -o bind /dev/pts ${BUILD_PATH}/dev/pts
 mount -t proc none ${BUILD_PATH}/proc
 mount -t sysfs none ${BUILD_PATH}/sys
 
-# Copy necessary executable
-cp /usr/bin/qemu-arm-static "${BUILD_PATH}/usr/bin/"
-
-# Comment out every line in file
-sed -i 's/^/# /' ${BUILD_PATH}/etc/ld.so.preload
 
 # Modify/add image files directly
 cp -R /builder/files/* ${BUILD_PATH}/
@@ -117,11 +110,6 @@ apt-get autoremove
 apt-get clean
 rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 EOF
-
-# Uncomment out every line in file
-sed -i 's/^# //' ${BUILD_PATH}/etc/ld.so.preload
-
-rm "${BUILD_PATH}/usr/bin/qemu-arm-static"
 
 # Unmount pseudo filesystems
 umount -l ${BUILD_PATH}/dev/pts

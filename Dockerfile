@@ -2,9 +2,6 @@ FROM debian:jessie
 
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    binfmt-support \
-    qemu \
-    qemu-user-static \
     libguestfs-tools \
     zip \
     unzip \
