@@ -49,10 +49,10 @@ cp -R /builder/files/* ${BUILD_PATH}/
 chroot ${BUILD_PATH} /bin/bash -x - << EOF
 
 # Set default locales to 'en_US.UTF-8'
-echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen
-locale-gen
+# echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen
+# locale-gen
 
-apt-get update
+# apt-get update
 # apt-get upgrade -y
 
 # Install basic software
@@ -85,7 +85,7 @@ apt-get update
 # chown -R homeassistant:homeassistant /srv/homeassistant
 
 # Install mosquitto
-apt-get install -y mosquitto
+# apt-get install -y mosquitto
 
 # Install influxdb
 wget "https://dl.influxdata.com/influxdb/releases/influxdb_${INFLUXDB_VERSION}_armhf.deb"
@@ -100,19 +100,18 @@ rm "influxdb_${INFLUXDB_VERSION}_armhf.deb"
 # chown -R homeassistant:homeassistant /home/homeassistant
 
 # Install ngrok
-curl -O https://bin.equinox.io/c/gDfFGFRN2Jh/ngrok-link-stable-linux-arm.tgz
-tar -xvzf ngrok-link-stable-linux-arm.tgz
-mv ngrok /usr/local/bin
-rm ngrok-link-stable-linux-arm.tgz
+# curl -O https://bin.equinox.io/c/gDfFGFRN2Jh/ngrok-link-stable-linux-arm.tgz
+# tar -xvzf ngrok-link-stable-linux-arm.tgz
+# mv ngrok /usr/local/bin
+# rm ngrok-link-stable-linux-arm.tgz
 
 # Clean up Python caches
-find /srv/homeassistant/lib/ | grep -E "(__pycache__|\.pyc$)" | xargs rm -rf
+# find /srv/homeassistant/lib/ | grep -E "(__pycache__|\.pyc$)" | xargs rm -rf
 
 # Cleanup other stuff
-apt-get --purge remove build-essential tk-dev
-apt-get --purge remove libncurses5-dev libncursesw5-dev libreadline6-dev
-apt-get --purge remove libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev
-apt-get --purge remove libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev
+apt-get --purge remove -y libncurses5-dev libncursesw5-dev libreadline6-dev
+apt-get --purge remove -y libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev
+apt-get --purge remove -y libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev
 apt-get autoremove
 apt-get clean
 rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
