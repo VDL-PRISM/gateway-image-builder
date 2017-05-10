@@ -88,9 +88,9 @@ chroot ${BUILD_PATH} /bin/bash -x - << EOF
 # apt-get install -y mosquitto
 
 # Install influxdb
-wget "https://dl.influxdata.com/influxdb/releases/influxdb_${INFLUXDB_VERSION}_armhf.deb"
-dpkg -i "influxdb_${INFLUXDB_VERSION}_armhf.deb"
-rm "influxdb_${INFLUXDB_VERSION}_armhf.deb"
+# wget "https://dl.influxdata.com/influxdb/releases/influxdb_${INFLUXDB_VERSION}_armhf.deb"
+# dpkg -i "influxdb_${INFLUXDB_VERSION}_armhf.deb"
+# rm "influxdb_${INFLUXDB_VERSION}_armhf.deb"
 
 # Install custom components and their dependencies
 # git clone https://github.com/VDL-PRISM/home-assistant-components.git /home/homeassistant/.homeassistant/custom_components
@@ -109,10 +109,8 @@ rm "influxdb_${INFLUXDB_VERSION}_armhf.deb"
 # find /srv/homeassistant/lib/ | grep -E "(__pycache__|\.pyc$)" | xargs rm -rf
 
 # Cleanup other stuff
-apt-get --purge remove -y libncurses5-dev libncursesw5-dev libreadline6-dev
-apt-get --purge remove -y libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev
-apt-get --purge remove -y libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev
-apt-get autoremove
+apt-get --purge remove -y libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev
+apt-get autoremove -y
 apt-get clean
 rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 EOF
