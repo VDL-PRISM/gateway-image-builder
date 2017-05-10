@@ -7,7 +7,7 @@ if [ ! -f /.dockerenv ]; then
 fi
 
 # Get versions for software that needs to be installed
-source workspace/versions.config
+source /workspace/versions.config
 
 # Place to build our sd-image
 BUILD_PATH="/build"
