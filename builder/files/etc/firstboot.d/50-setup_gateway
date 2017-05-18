@@ -17,3 +17,13 @@ EOF
 echo "Changing password" >> /dev/kmsg
 password="$(grep '^password:' /boot/device-init.yaml | sed 's/password: \(.*\)/\1/g')"
 echo "pi:${password}" | chpasswd
+
+echo "Updating Home Assistant configuration" >> /dev/kmsg
+python /usr/local/bin/setup_homeassistant.py
+
+echo "Setting up ngrok" >> /dev/kmsg
+python /usr/local/bin/setup_ngrok.py
+
+echo "Enabling ngrok" >> /dev/kmsg
+/usr/local/bin/ngrok service install -config /home/pi/.ngrok2/ngrok.yaml
+/usr/local/bin/ngrok service start
