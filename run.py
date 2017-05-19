@@ -25,14 +25,14 @@ if args.command == 'build':
     print("Creating image")
     subprocess.run('docker run -it --rm --privileged=true -v {}:/usr/rpi/images ' \
                    '-w /usr/rpi gateway-image-builder ' \
-                   '/bin/bash -c \'./run.sh images/{} < build.sh\''.format(path, name),
+                   '/bin/bash -c \'./prisms-run.sh images/{} < build.sh\''.format(path, name),
                    shell=True)
 
 elif args.command == 'shell':
     print("Entering shell")
     subprocess.run('docker run -it --rm --privileged=true -v {}:/usr/rpi/images ' \
                    '-w /usr/rpi gateway-image-builder ' \
-                   '/bin/bash -c \'./run.sh images/{}\''.format(path, name), shell=True)
+                   '/bin/bash -c \'./prisms-run.sh images/{}\''.format(path, name), shell=True)
 
 elif args.command == 'container':
     print("Entering container")
