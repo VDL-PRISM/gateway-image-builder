@@ -1,0 +1,8 @@
+sudo: required
+services:
+  - docker
+language: bash
+script:
+  - wget https://downloads.raspberrypi.org/raspbian_lite_latest
+  - unzip raspbian_lite_latest
+  - python run.py build 2017-04-10-raspbian-jessie-lite.img prisms.img
