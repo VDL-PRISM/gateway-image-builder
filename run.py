@@ -13,7 +13,7 @@ args = parser.parse_args()
 path, name = os.path.split(args.new_image)
 
 # Copy image to new
-shutil.copy2(orignal_image, new_image)
+shutil.copy2(args.orignal_image, args.new_image)
 
 print("Building docker image")
 subprocess.run('docker build -t gateway-image-builder .', shell=True)
