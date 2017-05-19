@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 set -x
 
 # Set default locales to 'en_US.UTF-8'
