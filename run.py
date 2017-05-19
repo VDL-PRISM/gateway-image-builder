@@ -1,14 +1,19 @@
 import argparse
 import os.path
+import shutil
 import subprocess
 
 
 parser = argparse.ArgumentParser(description='Run script to build gateway image')
 parser.add_argument('command', choices=['shell', 'build'])
-parser.add_argument('image', help='Image file you want to modify')
+parser.add_argument('orignal_image', help='Image file you want to modify')
+parser.add_argument('new_image', help='Image file that will be created')
 
 args = parser.parse_args()
-path, name = os.path.split(args.image)
+path, name = os.path.split(args.new_image)
+
+# Copy image to new
+shutil.copy2(orignal_image, new_image)
 
 print("Building docker image")
 subprocess.run('docker build -t gateway-image-builder .', shell=True)
