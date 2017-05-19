@@ -3,7 +3,7 @@ Description=Run tasks that need to be run on boot
 
 [Service]
 Type=oneshot
-ExecStart=python /usr/local/bin/prisms_boot.py
+ExecStart=/usr/bin/python /usr/local/bin/prisms_boot.py
 
 [Install]
 WantedBy=multi-user.target
