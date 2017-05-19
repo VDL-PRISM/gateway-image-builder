@@ -1,0 +1,13 @@
+[Unit]
+Description=ngrok secure tunnel client
+ConditionFileIsExecutable=/usr/local/bin/ngrok
+
+[Service]
+StartLimitInterval=5
+StartLimitBurst=10
+ExecStart=/usr/local/bin/ngrok "service" "run" "--config" "/home/pi/.ngrok2/ngrok.yaml"
+Restart=always
+RestartSec=120
+
+[Install]
+WantedBy=multi-user.target
