@@ -27,6 +27,18 @@ update-binfmts --enable qemu-arm
 # Mount the image
 guestmount -a "${RASPBIAN_IMAGE_NAME}.img" -m /dev/sda2:/ -m /dev/sda1:/boot "${BUILD_PATH}"
 
+# Mount pseudo filesystems
+mount -o bind /dev ${BUILD_PATH}/dev
+mount -o bind /dev/pts ${BUILD_PATH}/dev/pts
+mount -t proc none ${BUILD_PATH}/proc
+mount -t sysfs none ${BUILD_PATH}/sys
+
+# Copy necessary executable
+cp /usr/bin/qemu-arm-static "${BUILD_PATH}/usr/bin/"
+
+# Comment out every line in file
+sed -i 's/^/# /' ${BUILD_PATH}/etc/ld.so.preload
+
 # Modify/add image files directly
 cp -R ~/sensor-image-builder/files/* ${BUILD_PATH}/
 
@@ -37,22 +49,29 @@ chroot ${BUILD_PATH} /bin/bash -x - << EOF
 echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen
 locale-gen
 
-apt-get update
-apt-get upgrade -y
+# apt-get update
+# apt-get upgrade -y
+
+# Install Docker
+curl -sSL get.docker.com | sh
+
+# Install basic software
+apt-get install -y zip unzip avahi-daemon git
 
 # Install ngrok
 curl -O https://bin.equinox.io/c/gDfFGFRN2Jh/ngrok-link-stable-linux-arm.tgz
 tar -xvzf ngrok-link-stable-linux-arm.tgz
-mv ngrok "${BUILD_PATH}/usr/local/bin"
+mv ngrok /usr/local/bin
 rm ngrok-link-stable-linux-arm.tgz
 
-# Clean up Python caches
-find /srv/homeassistant/lib/ | grep -E "(__pycache__|\.pyc$)" | xargs rm -rf
+# Install YAML
+pip install --no-cache-dir pyyaml
 
 # Cleanup other stuff
 apt-get clean
 rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-EOF
+
+EOF # <<<<<<<<<<<<<<<<< END OF CHOWN
 
 # Uncomment out every line in file
 sed -i 's/^# //' ${BUILD_PATH}/etc/ld.so.preload
