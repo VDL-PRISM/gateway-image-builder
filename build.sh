@@ -10,7 +10,7 @@ locale-gen
 
 # Install basic software
 apt-get update && apt-get install -y \
-    zip unzip avahi-daemon git python-yaml
+    zip unzip avahi-daemon git python-yaml vim
 
 # Install Docker
 curl -sSL get.docker.com | sh
