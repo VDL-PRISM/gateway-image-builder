@@ -1,4 +1,7 @@
 #!/bin/bash -e
+#
+# To be run in chroot in an image.
+
 set -x
 
 # Set default locales to 'en_US.UTF-8'
