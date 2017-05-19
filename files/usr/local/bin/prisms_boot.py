@@ -98,12 +98,12 @@ if password_changed or hostname_changed:
     subprocess.call('reboot', shell=True)
     exit()
 
-# LOGGER.info("######### Starting docker container")
-# subprocess.call('docker run ' \
-#                '-v /etc/localtime:/etc/localtime:ro ' \
-#                '-v /home/pi/data/homeassistant:/etc/homeassistant ' \
-#                '-v /home/pi/data/mosquitto:/var/lib/mosquitto/ ' \
-#                '-v /home/pi/data/influxdb:/var/lib/influxdb ' \
-#                '--net=host -it -d prisms/gateway', shell=True)
+LOGGER.info("######### Starting docker container")
+subprocess.call('docker run ' \
+               '-v /etc/localtime:/etc/localtime:ro ' \
+               '-v /home/pi/data/homeassistant:/etc/homeassistant ' \
+               '-v /home/pi/data/mosquitto:/var/lib/mosquitto/ ' \
+               '-v /home/pi/data/influxdb:/var/lib/influxdb ' \
+               '--net=host -it -d prisms/gateway', shell=True)
 
 LOGGER.info("\n\n\n")
