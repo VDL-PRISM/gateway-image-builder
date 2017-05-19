@@ -10,10 +10,13 @@ parser.add_argument('orignal_image', help='Image file you want to modify')
 parser.add_argument('new_image', help='Image file that will be created')
 
 args = parser.parse_args()
-path, name = os.path.split(args.new_image)
 
-# Copy image to new
-shutil.copy2(args.orignal_image, args.new_image)
+orignal_image = os.path.abspath(args.orignal_image)
+new_image = os.path.abspath(args.new_image)
+path, name = os.path.split(new_image)
+
+print("Creating new image")
+shutil.copy2(orignal_image, new_image)
 
 print("Building docker image")
 subprocess.run('docker build -t gateway-image-builder .', shell=True)
