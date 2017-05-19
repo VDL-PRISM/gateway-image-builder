@@ -5,13 +5,15 @@ set -x
 echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen
 locale-gen
 
+# Install basic software
+apt-get update && apt-get install -y \
+    zip unzip avahi-daemon git python-yaml
+
 # Install Docker
 curl -sSL get.docker.com | sh
 
 # Set up docker to work on non-root users
-
-# Install basic software
-apt-get install -y zip unzip avahi-daemon git python-yaml
+usermod -aG docker pi
 
 # Install ngrok
 curl -O https://bin.equinox.io/c/gDfFGFRN2Jh/ngrok-link-stable-linux-arm.tgz
