@@ -1,10 +1,19 @@
+import logging
+import os
+import re
+import socket
 import subprocess
 import time
 import yaml
 
 
+LOGGER = logging.getLogger(__name__)
+LOGGER.setLevel(logging.DEBUG)
+LOGGER.addHandler(logging.FileHandler('/home/pi/prisms_boot.log'))
+LOGGER.addHandler(logging.StreamHandler())
+
 DEVICE_INIT = '/boot/device-init.yaml'
-HA_CONFIG_FILE = '/etc/homeassistant/configuration.yaml'
+HA_CONFIG_FILE = '/home/pi/data/homeassistant/configuration.yaml'
 NGROK_CONFIG_FILE = '/home/pi/.ngrok2/ngrok.yaml'
 
 password_changed = False
@@ -14,45 +23,87 @@ hostname_changed = False
 with open(DEVICE_INIT) as f:
     config = yaml.load(f)
 
-######### Set up hostname
 
+LOGGER.info("######### Set up hostname")
+current_hostname = socket.gethostname()
+new_hostname = config['hostname']
+if new_hostname != current_hostname:
+    LOGGER.info("\tChanging hostname to \"%s\"", new_hostname)
 
-######### Set up password
-if config['password'] != '[hidden]':
-    # TODO: change password
-    pass
+    with open('/etc/hostname', 'w') as f:
+        f.write(new_hostname)
 
-# Hide password
+    with open('/etc/hosts', 'w') as f:
+        f.write("127.0.0.1       localhost\n")
+        f.write("::1             localhost ip6-localhost ip6-loopback\n")
+        f.write("ff02::1         ip6-allnodes\n")
+        f.write("ff02::2         ip6-allrouters\n")
+        f.write("\n")
+        f.write("127.0.1.1       {}\n".format(new_hostname))
 
-
-######### Set up Home Assistant configuration
-ha_config = config.get('home_assistant_configuration')
-if ha_config is not None:
-    # Write Home Assistant configuration
-    with open(HA_CONFIG_FILE, 'w') as f:
-        f.write(yaml.dump(ha_config, default_flow_style=False))
+    hostname_changed = True
 else:
-    print("No Home Assistant configuration")
+    LOGGER.info("\tKeeping hostname the same...")
 
 
-######### Set up ngrok configuration
+LOGGER.info("######### Set up password")
+if config['password'] != '[hidden]':
+    LOGGER.info("\tChanging password...")
+    subprocess.call('echo "pi:{}" | chpasswd'.format(config['password']), shell=True)
+    password_changed = True
+
+    LOGGER.info("\tHiding password in device-init.yaml file")
+    with open(DEVICE_INIT) as f:
+        text = f.read()
+        text = re.sub("^(password: )(.*)$", "\\1\"[hidden]\"", text, flags=re.MULTILINE)
+
+    with open(DEVICE_INIT, 'w') as f:
+        f.write(text)
+else:
+    LOGGER.info("\tKeeping password the same...")
+
+
+LOGGER.info("######### Set up ngrok configuration")
 ngrok_config = config.get('ngrok')
 if ngrok_config is not None:
-
     if not os.path.exists(os.path.dirname(NGROK_CONFIG_FILE)):
+        LOGGER.info("\tMaking ngrok folders")
         os.makedirs(os.path.dirname(NGROK_CONFIG_FILE))
 
-    # Write Home Assistant configuration
+    # Write configuration
+    LOGGER.info("\tUpdating ngrok configuration")
     with open(NGROK_CONFIG_FILE, 'w') as f:
         f.write(yaml.dump(ngrok_config, default_flow_style=False))
 else:
-    print("No ngrok configuration")
+    LOGGER.info("\tNo ngrok configuration")
 
 
+LOGGER.info("######### Set up Docker")
+subprocess.call('mkdir -p data/{homeassistant,influxdb,mosquitto}', shell=True)
+
+
+LOGGER.info("######### Set up Home Assistant configuration")
+ha_config = config.get('home_assistant_configuration')
+if ha_config is not None:
+    LOGGER.info("\tUpdating Home Assistant configuration")
+    with open(HA_CONFIG_FILE, 'w') as f:
+        f.write(yaml.dump(ha_config, default_flow_style=False))
+else:
+    LOGGER.info("\tNo Home Assistant configuration")
 
 
 if password_changed or hostname_changed:
-    print("Rebooting in 10 seconds")
+    LOGGER.info("Rebooting so hostname or password changes will take affect\n\n\n")
     time.sleep(10)
-    subprocess.run('reboot', shell=True)
+    subprocess.call('reboot', shell=True)
+    exit()
 
+# LOGGER.info("######### Starting docker container")
+# subprocess.call('docker run ' \
+#                '-v /etc/localtime:/etc/localtime:ro ' \
+#                '-v /home/pi/data/homeassistant:/etc/homeassistant ' \
+#                '-v /home/pi/data/mosquitto:/var/lib/mosquitto/ ' \
+#                '-v /home/pi/data/influxdb:/var/lib/influxdb ' \
+#                '--net=host -it -d prisms/gateway', shell=True)
+
+LOGGER.info("\n\n\n")
