@@ -2,7 +2,11 @@ sudo: required
 services:
   - docker
 language: python
+before_install:
+    - sudo apt-get update
+install:
+    - sudo apt-get install -y qemu qemu-user-static
+    - wget https://downloads.raspberrypi.org/raspbian_lite_latest
+    - unzip raspbian_lite_latest
 script:
-  - wget https://downloads.raspberrypi.org/raspbian_lite_latest
-  - unzip raspbian_lite_latest
   - python3 run.py build 2017-04-10-raspbian-jessie-lite.img prisms.img
