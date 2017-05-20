@@ -79,7 +79,13 @@ else:
 
 
 LOGGER.info("######### Set up Docker")
-subprocess.call('mkdir -p data/{homeassistant,influxdb,mosquitto}', shell=True)
+folders = ['/home/pi/data/homeassistant',
+           '/home/pi/data/influxdb',
+           '/home/pi/data/mosquitto']
+for folder in folders:
+    if not os.path.exists(folder):
+        LOGGER.info("\tCreating folder %s", folder)
+        os.makedirs(folder)
 
 
 LOGGER.info("######### Set up Home Assistant configuration")
@@ -105,5 +111,6 @@ subprocess.call('docker run ' \
                '-v /home/pi/data/mosquitto:/var/lib/mosquitto/ ' \
                '-v /home/pi/data/influxdb:/var/lib/influxdb ' \
                '--net=host -it -d prisms/gateway', shell=True)
+LOGGER.info("\tDone...")
 
 LOGGER.info("\n\n\n")
