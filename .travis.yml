@@ -3,10 +3,21 @@ services:
   - docker
 language: python
 before_install:
-    - sudo apt-get update
+  - sudo apt-get update
 install:
-    - sudo apt-get install -y qemu qemu-user-static
-    - wget https://downloads.raspberrypi.org/raspbian_lite_latest
-    - unzip raspbian_lite_latest
+  - sudo apt-get install -y qemu qemu-user-static
+  - wget https://downloads.raspberrypi.org/raspbian_lite_latest
+  - unzip raspbian_lite_latest
 script:
-  - python3 run.py build 2017-04-10-raspbian-jessie-lite.img prisms.img
+  - python3 run.py build 2017-04-10-raspbian-jessie-lite.img ${TRAVIS_TAG}-prisms-gateway.img
+before_deploy:
+  - zip ${TRAVIS_TAG}-prisms-gateway.img.zip ${TRAVIS_TAG}-prisms-gateway.img
+deploy:
+  provider: releases
+  api_key:
+    secure: SmFcnuqZR075ZkH5FMutVOb490QmcCbAYuAf5Jiyw2vqwy+6NE2oNrDnR9ipcoIWiXrdPTPM6Q9RC7/bALrt3vyxY0KGs3F5uJePi/YJpZrlCb93jGf33p2WsTs52og/IVYQvZmv2YAnoY8RARLLwX18L33sNc/1kCQhrrys71TwNhFGfavdkakY42CefxwrBR41+jTFwyjS0WwQB8jH1TRts1s5XGBEO9IEVLkkID0nFxv6zBENSZ6174S2XupBVgBHaAhNOfT79oWSFq7joW47beTqei0ecig37UOFZey7uUfZdaC+Ivoj3icGxhaRaO46YtruqGhqopvRlnhHFKzGjdaiGGhvtl02m1/eONRxbEzR+YEeLX2oMDuiUMoQ+7XStloO/eJ8BHIDj6lRk9h9AsvLH6LEPeZyLMYvgPT6aOlBlZwlSG44aeTIL2h4WElGgZF9mGSSqpGMsnSp5NCMshgozaD9plEwa5xdXy6lDVNOQj1phpv/kT6npEwBweH93MdwOjIl/t15hp3rYxguxOKG3t3pdjYbVCO3As5LqMLD+P9SP6SNakmMy5WKHhhhXwwAlNFJ1OlLL39Mrlf3E1dNjg8ZRGmfnxPY1Q6HsGAGEUXu6P6s/BP5GhBohUGXvWCaT61d18PDQRha9LRw2HjHehNb1tXedafLqMo=
+  file: ${TRAVIS_TAG}-prisms-gateway.img.zip
+  skip_cleanup: true
+  on:
+    tags: true
+    repo: VDL-PRISM/gateway-image-builder
