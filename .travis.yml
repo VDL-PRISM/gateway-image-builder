@@ -9,8 +9,9 @@ install:
   - wget https://downloads.raspberrypi.org/raspbian_lite_latest
   - unzip raspbian_lite_latest
 script:
-  - python3 run.py build 2017-04-10-raspbian-jessie-lite.img ${TRAVIS_TAG}-prisms-gateway.img
+  - python3 run.py build 2017-04-10-raspbian-jessie-lite.img prisms-gateway.img
 before_deploy:
+  - mv prisms-gateway.img ${TRAVIS_TAG}-prisms-gateway.img
   - zip ${TRAVIS_TAG}-prisms-gateway.img.zip ${TRAVIS_TAG}-prisms-gateway.img
 deploy:
   provider: releases
