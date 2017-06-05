@@ -105,12 +105,25 @@ if password_changed or hostname_changed:
     exit()
 
 LOGGER.info("######### Starting docker container")
-subprocess.call('docker run ' \
-               '-v /etc/localtime:/etc/localtime:ro ' \
-               '-v /home/pi/data/homeassistant:/etc/homeassistant ' \
-               '-v /home/pi/data/mosquitto:/var/lib/mosquitto/ ' \
-               '-v /home/pi/data/influxdb:/var/lib/influxdb ' \
-               '--net=host -it -d prisms/gateway', shell=True)
-LOGGER.info("\tDone...")
 
+output = subprocess.check_output('docker ps -q -f name=prisms_gateway', shell=True)
+if output != '':
+    LOGGER.info("\tGateway docker container is already running!")
+else:
+    output = subprocess.check_output('docker ps -aq -f status=exited -f name=prisms_gateway', shell=True)
+
+    if output != '':
+        LOGGER.info("\tStarting docker container again")
+        subprocess.call('docker start prisms_gateway', shell=True)
+    else:
+        LOGGER.info("\tRunning docker container for the first time")
+        subprocess.call('docker run ' \
+                       '-v /etc/localtime:/etc/localtime:ro ' \
+                       '-v /home/pi/data/homeassistant:/etc/homeassistant ' \
+                       '-v /home/pi/data/mosquitto:/var/lib/mosquitto/ ' \
+                       '-v /home/pi/data/influxdb:/var/lib/influxdb ' \
+                       '--net=host --name prisms_gateway ' \
+                       '-it -d prisms/gateway', shell=True)
+
+LOGGER.info("\tDone...")
 LOGGER.info("\n\n\n")
