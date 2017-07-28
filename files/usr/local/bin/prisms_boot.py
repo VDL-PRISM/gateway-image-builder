@@ -97,6 +97,14 @@ if ha_config is not None:
 else:
     LOGGER.info("\tNo Home Assistant configuration")
 
+LOGGER.info("######### Install default custom components")
+if not os.path.exists('/home/pi/data/homeassistant/custom_components'):
+    LOGGER.info("Downloading repository")
+    url = 'https://github.com/VDL-PRISM/home-assistant-components.git'
+    subprocess.call('git clone --branch v1.0.0 {}'.format(url), shell=True)
+else:
+    LOGGER.info("\tCustom components already exist")
+
 
 if password_changed or hostname_changed:
     LOGGER.info("Rebooting so hostname or password changes will take affect\n\n\n")
