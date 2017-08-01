@@ -5,11 +5,11 @@ language: python
 before_install:
   - sudo apt-get update
 install:
-  - sudo apt-get install -y qemu qemu-user-static
+  - sudo apt-get install -y qemu qemu-user-static unzip git
   - wget https://downloads.raspberrypi.org/raspbian_lite_latest
   - unzip raspbian_lite_latest
 script:
-  - python3 run.py build 2017-04-10-raspbian-jessie-lite.img prisms-gateway.img
+  - python3 run.py build 2017-07-05-raspbian-jessie-lite.img prisms-gateway.img
 before_deploy:
   - mv prisms-gateway.img ${TRAVIS_TAG}-prisms-gateway.img
   - zip ${TRAVIS_TAG}-prisms-gateway.img.zip ${TRAVIS_TAG}-prisms-gateway.img

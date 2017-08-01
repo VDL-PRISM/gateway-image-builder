@@ -1,6 +1,7 @@
 import logging
 import os
 import re
+import shutil
 import socket
 import subprocess
 import time
@@ -14,6 +15,7 @@ LOGGER.addHandler(logging.StreamHandler())
 
 DEVICE_INIT = '/boot/device-init.yaml'
 HA_CONFIG_FILE = '/home/pi/data/homeassistant/configuration.yaml'
+HA_CUSTOM_COMPONENTS_FOLDER = '/home/pi/data/homeassistant/custom_components'
 NGROK_CONFIG_FILE = '/home/pi/.ngrok2/ngrok.yaml'
 
 password_changed = False
@@ -88,12 +90,24 @@ for folder in folders:
         os.makedirs(folder)
 
 
+LOGGER.info("######### Install default custom components")
+if not os.path.exists(HA_CUSTOM_COMPONENTS_FOLDER):
+    LOGGER.info("Downloading repository")
+    url = 'https://github.com/VDL-PRISM/home-assistant-components.git'
+    subprocess.call('git clone --branch v1.0.0 {} {}'.format(url, HA_CUSTOM_COMPONENTS_FOLDER), shell=True)
+else:
+    LOGGER.info("\tCustom components already exist")
+
+
 LOGGER.info("######### Set up Home Assistant configuration")
 ha_config = config.get('home_assistant_configuration')
 if ha_config is not None:
-    LOGGER.info("\tUpdating Home Assistant configuration")
-    with open(HA_CONFIG_FILE, 'w') as f:
-        f.write(yaml.dump(ha_config, default_flow_style=False))
+    if os.path.exists(HA_CONFIG_FILE):
+        LOGGER.info("\tHome Assistant configuration already exists")
+    else:
+        LOGGER.info("\tUpdating Home Assistant configuration")
+        with open(HA_CONFIG_FILE, 'w') as f:
+            f.write(yaml.dump(ha_config, default_flow_style=False))
 else:
     LOGGER.info("\tNo Home Assistant configuration")
 
@@ -105,7 +119,6 @@ if password_changed or hostname_changed:
     exit()
 
 LOGGER.info("######### Starting docker container")
-
 output = subprocess.check_output('docker ps -q -f name=prisms_gateway', shell=True)
 if output != '':
     LOGGER.info("\tGateway docker container is already running!")
@@ -114,16 +127,29 @@ else:
 
     if output != '':
         LOGGER.info("\tStarting docker container again")
-        subprocess.call('docker start prisms_gateway', shell=True)
+        output = subprocess.check_output('docker start prisms_gateway', shell=True)
+        LOGGER.info(output)
     else:
+        run_command = 'docker run ' \
+                      '-v /etc/localtime:/etc/localtime:ro ' \
+                      '-v /home/pi/data/homeassistant:/etc/homeassistant ' \
+                      '-v /home/pi/data/mosquitto:/var/lib/mosquitto/ ' \
+                      '-v /home/pi/data/influxdb:/var/lib/influxdb ' \
+                      '--net=host --name prisms_gateway ' \
+                      '-it -d prisms/gateway'
+
         LOGGER.info("\tRunning docker container for the first time")
-        subprocess.call('docker run ' \
-                       '-v /etc/localtime:/etc/localtime:ro ' \
-                       '-v /home/pi/data/homeassistant:/etc/homeassistant ' \
-                       '-v /home/pi/data/mosquitto:/var/lib/mosquitto/ ' \
-                       '-v /home/pi/data/influxdb:/var/lib/influxdb ' \
-                       '--net=host --name prisms_gateway ' \
-                       '-it -d prisms/gateway', shell=True)
+        output = subprocess.check_output(run_command, shell=True)
+        LOGGER.info(output)
+
+        LOGGER.info("\tInstalling custom components in docker container")
+        output = subprocess.check_output('docker exec prisms_gateway pip install -r /etc/homeassistant/custom_components/requirements.txt',
+                                         shell=True)
+        LOGGER.info(output)
+
+        LOGGER.info("\tRestarting Home Assistant")
+        output = subprocess.check_output('docker exec prisms_gateway supervisorctl restart homeassistant', shell=True)
+        LOGGER.info(output)
 
 LOGGER.info("\tDone...")
 LOGGER.info("\n\n\n")

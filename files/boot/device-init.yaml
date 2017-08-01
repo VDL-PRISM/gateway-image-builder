@@ -30,11 +30,11 @@ home_assistant_configuration:
       homeassistant.bootstrap: info
       homeassistant.util.package: info
       custom_components.prisms_influxdb: info
-      custom_components.sensor.air_quality: debug
+      custom_components.sensor.prisms_wifi_sensor: debug
       coapthon: debug
 
   sensor:
-    - platform: air_quality
+    - platform: prisms_wifi_sensor
       update_time: 15
       discover_time: 30
 
